@@ -6,11 +6,11 @@ package com.che.rxjavatest;
 
 public class Display {
 
-    final float temperature;
-    final float humidity;
-    final float airPressure;
+    final String temperature;
+    final String humidity;
+    final String airPressure;
 
-    public Display(float t, float a, float h) {
+    public Display(String t, String a, String h) {
         temperature = t;
         airPressure = a;
         humidity = h;

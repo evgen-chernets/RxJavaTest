@@ -3,14 +3,16 @@ package com.che.rxjavatest;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.che.rxjavatest.data.AData;
-import com.che.rxjavatest.data.HData;
-import com.che.rxjavatest.data.TData;
+import com.che.rxjavatest.data.AirPressure;
+import com.che.rxjavatest.data.Humidity;
+import com.che.rxjavatest.data.Temperature;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
+import rx.Subscription;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -29,19 +31,34 @@ public class MainActivity extends AppCompatActivity {
 
     private long getRandomDelay() {
         long delay = 100 + (long)(100 * new Random().nextFloat());
-        return delay < 190 ? delay : 1000 + delay;
+        return delay < 195 ? delay : 1000 + delay;
     }
 
+    private ArrayList<String> tDataCollection = new ArrayList<>();
+    private ArrayList<String> hDataCollection = new ArrayList<>();
+    private ArrayList<String> aDataCollection = new ArrayList<>();
+
     private void test() {
+        final String NA = "N/A";
 
-        Observable<TData> tDataObservable = Observable.just(new TData()).delay(getRandomDelay(), TimeUnit.MILLISECONDS).repeat(100);
-        Observable<HData> hDataObservable = Observable.just(new HData()).delay(getRandomDelay(), TimeUnit.MILLISECONDS).repeat(100);
-        Observable<AData> aDataObservable = Observable.just(new AData()).delay(getRandomDelay(), TimeUnit.MILLISECONDS).repeat(100);
+        Subscription tSubscription = Observable.interval(0, getRandomDelay(), TimeUnit.MILLISECONDS)
+                .timeout(1000, TimeUnit.MILLISECONDS)
+                .doOnError(error -> tDataCollection.add(NA))
+                .retry()
+                .subscribe(value -> tDataCollection.add(Temperature.value()));
 
 
+        Subscription hSubscription = Observable.interval(0, getRandomDelay(), TimeUnit.MILLISECONDS)
+                .timeout(1000, TimeUnit.MILLISECONDS)
+                .doOnError(error -> hDataCollection.add(NA))
+                .retry()
+                .subscribe(value -> hDataCollection.add(Humidity.value()));
 
-//        Observable temperature = new EventEmitter(Observable.OnSubscribe);
-//
-//        temperature.on('data', data => { 24.2 })
+        Subscription aSubscription = Observable.interval(0, getRandomDelay(), TimeUnit.MILLISECONDS)
+                .timeout(1000, TimeUnit.MILLISECONDS)
+                .doOnError(error -> aDataCollection.add(NA))
+                .retry()
+                .subscribe(value -> aDataCollection.add(AirPressure.value()));
+
     }
 }
