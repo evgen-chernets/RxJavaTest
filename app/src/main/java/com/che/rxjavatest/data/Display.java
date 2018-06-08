@@ -1,4 +1,4 @@
-package com.che.rxjavatest;
+package com.che.rxjavatest.data;
 
 /**
  * Created by che on 05.06.18.

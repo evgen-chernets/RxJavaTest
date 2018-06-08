@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Subscription;
+import rx.functions.Func3;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -41,24 +42,28 @@ public class MainActivity extends AppCompatActivity {
     private void test() {
         final String NA = "N/A";
 
-        Subscription tSubscription = Observable.interval(0, getRandomDelay(), TimeUnit.MILLISECONDS)
+        Observable tObservable = Observable.interval(0, getRandomDelay(), TimeUnit.MILLISECONDS)
                 .timeout(1000, TimeUnit.MILLISECONDS)
                 .doOnError(error -> tDataCollection.add(NA))
-                .retry()
-                .subscribe(value -> tDataCollection.add(Temperature.value()));
+                .retry();
+//        tObservable.subscribe(value -> tDataCollection.add(Temperature.value()));
 
 
-        Subscription hSubscription = Observable.interval(0, getRandomDelay(), TimeUnit.MILLISECONDS)
+        Observable hObservable = Observable.interval(0, getRandomDelay(), TimeUnit.MILLISECONDS)
                 .timeout(1000, TimeUnit.MILLISECONDS)
                 .doOnError(error -> hDataCollection.add(NA))
-                .retry()
-                .subscribe(value -> hDataCollection.add(Humidity.value()));
+                .retry();
+//                .subscribe(value -> hDataCollection.add(Humidity.value()));
 
-        Subscription aSubscription = Observable.interval(0, getRandomDelay(), TimeUnit.MILLISECONDS)
+        Observable aObservable = Observable.interval(0, getRandomDelay(), TimeUnit.MILLISECONDS)
                 .timeout(1000, TimeUnit.MILLISECONDS)
                 .doOnError(error -> aDataCollection.add(NA))
-                .retry()
-                .subscribe(value -> aDataCollection.add(AirPressure.value()));
+                .retry();
+//                .subscribe(value -> aDataCollection.add(AirPressure.value()));
+
+//        Observable.combineLatest(tObservable, aObservable, hObservable, (Func3<T1, T2, T3, R>) args -> {
+//
+//        }).subscribe();
 
     }
 }
