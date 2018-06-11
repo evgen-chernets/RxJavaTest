@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.che.rxjavatest.data.AirPressure;
+import com.che.rxjavatest.data.Display;
 import com.che.rxjavatest.data.Humidity;
 import com.che.rxjavatest.data.Temperature;
 
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private long getRandomDelay() {
-        long delay = 100 + (long)(100 * new Random().nextFloat());
+        long delay = 100 + (long) (100 * new Random().nextFloat());
         return delay < 195 ? delay : 1000 + delay;
     }
 
@@ -39,31 +40,31 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> hDataCollection = new ArrayList<>();
     private ArrayList<String> aDataCollection = new ArrayList<>();
 
-    private void test() {
-        final String NA = "N/A";
+    private final String NA = "N/A";
 
-        Observable tObservable = Observable.interval(0, getRandomDelay(), TimeUnit.MILLISECONDS)
+    private Observable createDataSource(ArrayList<String> list) {
+        return Observable
+                .interval(0, getRandomDelay(), TimeUnit.MILLISECONDS)
                 .timeout(1000, TimeUnit.MILLISECONDS)
-                .doOnError(error -> tDataCollection.add(NA))
+                .doOnError(error -> list.add(NA))
                 .retry();
+    }
+
+    private void test() {
+
+
+        Observable tObservable = createDataSource(tDataCollection);
 //        tObservable.subscribe(value -> tDataCollection.add(Temperature.value()));
 
+        Observable hObservable = createDataSource(hDataCollection);
+//        hObservable.subscribe(value -> hDataCollection.add(Humidity.value()));
 
-        Observable hObservable = Observable.interval(0, getRandomDelay(), TimeUnit.MILLISECONDS)
-                .timeout(1000, TimeUnit.MILLISECONDS)
-                .doOnError(error -> hDataCollection.add(NA))
-                .retry();
-//                .subscribe(value -> hDataCollection.add(Humidity.value()));
+        Observable aObservable = createDataSource(aDataCollection);
+//        aObservable.subscribe(value -> aDataCollection.add(AirPressure.value()));
 
-        Observable aObservable = Observable.interval(0, getRandomDelay(), TimeUnit.MILLISECONDS)
-                .timeout(1000, TimeUnit.MILLISECONDS)
-                .doOnError(error -> aDataCollection.add(NA))
-                .retry();
-//                .subscribe(value -> aDataCollection.add(AirPressure.value()));
-
-//        Observable.combineLatest(tObservable, aObservable, hObservable, (Func3<T1, T2, T3, R>) args -> {
-//
-//        }).subscribe();
+        Observable.zip(tObservable, aObservable, hObservable, Display::new)
+                .take(1).subscribe();
+        Observable.combineLatest(tObservable, aObservable, hObservable, Display::new).subscribe();
 
     }
 }
